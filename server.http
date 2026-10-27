@@ -1,0 +1,76 @@
+# Every route of server.py, for the REST Client extension (humao.rest-client).
+# Start the server first: uv run uvicorn server:app --port 8000
+# Click "Send Request" above a request.
+#
+# Create a session, copy the "id" from the response, and replace SESSION_ID in the URLs below.
+# Copy ARTIFACT_ID from the artifacts list.
+#
+# This extension cannot show a stream, so subscribe to events in a terminal instead:
+#   curl -N http://127.0.0.1:8000/sessions/SESSION_ID/events
+
+### Create a session (POST /sessions)
+POST http://127.0.0.1:8000/sessions
+Content-Type: application/json
+
+{
+  "message": "Use get_customer to tell me customer 123's plan."
+}
+
+### List sessions (GET /sessions)
+GET http://127.0.0.1:8000/sessions?limit=5
+
+### Get one session: status and pending actions (GET /sessions/{id})
+GET http://127.0.0.1:8000/sessions/SESSION_ID
+
+### Update reasoning effort: low, medium or high (PATCH /sessions/{id})
+PATCH http://127.0.0.1:8000/sessions/SESSION_ID
+Content-Type: application/json
+
+{
+  "effort": "low"
+}
+
+### Saved history (GET /sessions/{id}/items)
+GET http://127.0.0.1:8000/sessions/SESSION_ID/items
+
+### Send a message (POST /sessions/{id}/messages)
+# Sending again with the same Idempotency-Key is treated as a retry, not a new message.
+POST http://127.0.0.1:8000/sessions/SESSION_ID/messages
+Content-Type: application/json
+Idempotency-Key: my-first-message
+
+{
+  "text": "Tell me customer 123's plan."
+}
+
+### Cancel the running turn (POST /sessions/{id}/cancel)
+POST http://127.0.0.1:8000/sessions/SESSION_ID/cancel
+
+### Stream events (GET /sessions/{id}/events)
+# Not sent from here. Run in a terminal: curl -N http://127.0.0.1:8000/sessions/SESSION_ID/events
+
+### Delete the session (DELETE /sessions/{id})
+DELETE http://127.0.0.1:8000/sessions/SESSION_ID
+
+### Upload a file into the hosted workspace (POST /sessions/{id}/files)
+POST http://127.0.0.1:8000/sessions/SESSION_ID/files
+Content-Type: application/json
+
+{
+  "path": "/workspace/notes.txt",
+  "text": "Course verified\n"
+}
+
+### Ask the agent to write a file that becomes an artifact
+POST http://127.0.0.1:8000/sessions/SESSION_ID/messages
+Content-Type: application/json
+
+{
+  "text": "Copy /workspace/notes.txt to /workspace/outputs/notes.txt."
+}
+
+### List artifacts and copy an artifact "id" (GET /sessions/{id}/artifacts)
+GET http://127.0.0.1:8000/sessions/SESSION_ID/artifacts
+
+### Download an artifact (GET /sessions/{id}/artifacts/{artifact_id})
+GET http://127.0.0.1:8000/sessions/SESSION_ID/artifacts/ARTIFACT_ID
