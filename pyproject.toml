@@ -1,0 +1,10 @@
+[project]
+name = "agents-api"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "ipykernel>=7.4.0",
+    "jupyterlab>=4.6.4",
+    "openai==3.23.0",
+    "python-dotenv>=1.2.4",
+]
